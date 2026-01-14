@@ -30,9 +30,7 @@ To run this project on your local machine, follow these steps.
   Place the LSWMD.pkl file inside the data/ folder.
 
 
-4. Retrain the Model - optional
-
-  If you want to process the data and train the model from scratch:
+4. Retrain the Model 
 
   Preprocess the Data: Run the data handling script to generate the training/testing pickles.
 
