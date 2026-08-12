@@ -1,12 +1,8 @@
-# defect_context.py
-# Fab-grade Defect Knowledge Base
-# This is used as the physics + process truth layer for the RAG system
+# defect context
+# defect knowledge base for process guidance
 
 DEFECT_KNOWLEDGE_BASE = {
-
-    # -------------------------------
-    # 1. Center Defect
-    # -------------------------------
+    # center defect
     "Center": {
         "Process_Module": "Lithography (Spin Coating / Develop)",
         "Physics": (
@@ -22,9 +18,7 @@ DEFECT_KNOWLEDGE_BASE = {
         "Risk_Level": "Medium"
     },
 
-    # -------------------------------
-    # 2. Donut Defect
-    # -------------------------------
+    # donut defect
     "Donut": {
         "Process_Module": "Thermal Processing (RTP / Furnace / Etch)",
         "Physics": (
@@ -40,9 +34,7 @@ DEFECT_KNOWLEDGE_BASE = {
         "Risk_Level": "High"
     },
 
-    # -------------------------------
-    # 3. Edge-Loc Defect
-    # -------------------------------
+    # edge loc defect
     "Edge-Loc": {
         "Process_Module": "Wafer Handling / Transport",
         "Physics": (
@@ -57,9 +49,7 @@ DEFECT_KNOWLEDGE_BASE = {
         "Risk_Level": "Low"
     },
 
-    # -------------------------------
-    # 4. Edge-Ring Defect
-    # -------------------------------
+    # edge ring defect
     "Edge-Ring": {
         "Process_Module": "Lithography (Spin Coat / Edge Bead Removal) or Wet Clean",
         "Physics": (
@@ -74,9 +64,7 @@ DEFECT_KNOWLEDGE_BASE = {
         "Risk_Level": "Medium"
     },
 
-    # -------------------------------
-    # 5. Localized (Loc) Defect
-    # -------------------------------
+    # loc defect
     "Loc": {
         "Process_Module": "Deposition / Etch / Implant",
         "Physics": (
@@ -92,9 +80,7 @@ DEFECT_KNOWLEDGE_BASE = {
         "Risk_Level": "High"
     },
 
-    # -------------------------------
-    # 6. Random Defect
-    # -------------------------------
+    # random defect
     "Random": {
         "Process_Module": "Cleanroom Environment / Tool Cross-Contamination",
         "Physics": (
@@ -110,9 +96,7 @@ DEFECT_KNOWLEDGE_BASE = {
         "Risk_Level": "Variable"
     },
 
-    # -------------------------------
-    # 7. Scratch
-    # -------------------------------
+    # scratch defect
     "Scratch": {
         "Process_Module": "CMP / Handling",
         "Physics": (
@@ -128,9 +112,7 @@ DEFECT_KNOWLEDGE_BASE = {
         "Risk_Level": "Critical"
     },
 
-    # -------------------------------
-    # 8. Near-Full Defect
-    # -------------------------------
+    # near full defect
     "Near-full": {
         "Process_Module": "Process Tool or Metrology Tool Failure",
         "Physics": (
@@ -146,9 +128,7 @@ DEFECT_KNOWLEDGE_BASE = {
         "Risk_Level": "Critical"
     },
 
-    # -------------------------------
-    # 9. No Defect
-    # -------------------------------
+    # no defect
     "none": {
         "Process_Module": "Normal Operation",
         "Physics": "Process within statistical control limits.",

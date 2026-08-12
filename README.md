@@ -1,55 +1,57 @@
-# wafer-defect-detection-and-AI-diagnosis
-An End-to-End Wafer defect detection and classification prototype with AI-assisted diagnostics
+# Wafer Defect Detection and AI Diagnosis
 
-Project Report: https://docs.google.com/document/d/1yX7YYs442Cnwx51rdl6zzrNE8yArN0am6SBih1FNJnU/edit?usp=sharing
+This repository contains a wafer fault detection and classification workflow.
+It uses a CNN model for defect classification and a Streamlit dashboard for diagnosis support.
 
-This repository contains the code for a prototype Fault Detection and Classification (FDC) system. It detects wafer defects using a custom CNN and generates actionable maintenance reports using the Gemini 2.5 Flash LLM. For detailed information on the methodology, dataset, and results, please refer to the project report linked above.
+## Project Report
 
-# How to Run the Code
+https://docs.google.com/document/d/1yX7YYs442Cnwx51rdl6zzrNE8yArN0am6SBih1FNJnU/edit?usp=sharing
 
-To run this project on your local machine, follow these steps.
+## Repository Files
 
-1. Clone the Repository
+- `1_InspectingDataset.py`: dataset inspection and sample visualization
+- `2_DHandPP.py`: data handling and preprocessing pipeline
+- `3_TrainingCNN.py`: CNN training script
+- `LLM-RAG.py`: Streamlit dashboard with report generation
+- `defect_context.py`: static defect knowledge base
 
-  Download the project files to your local system.
+## Setup
 
+Install dependencies:
 
-2. Install Dependencies
+```bash
+pip install streamlit torch pandas numpy opencv-python matplotlib langchain-google-genai scikit-learn jupyter
+```
 
-  You will need Python installed. Install the required libraries using pip:
+## Dataset
 
-  pip install streamlit torch pandas numpy opencv-python matplotlib langchain-google-genai scikit-learn jupyter
+The raw dataset is not included in this repository.
 
+1. Download WM-811K (`LSWMD.pkl`) from Kaggle.
+2. Place `LSWMD.pkl` in the `data/` folder.
 
-3. Dataset Setup
+## Training
 
-  Due to size limits, the raw dataset is not included in this repository.
+1. Preprocess data:
 
-  Download the WM-811K dataset (file named LSWMD.pkl) from Kaggle.
+   ```bash
+   python 2_DHandPP.py
+   ```
 
-  Place the LSWMD.pkl file inside the data/ folder.
+2. Train the model:
 
+   ```bash
+   python 3_TrainingCNN.py
+   ```
 
-4. Retrain the Model 
+## Run the Dashboard
 
-  Preprocess the Data: Run the data handling script to generate the training/testing pickles.
+1. Get a Gemini API key from Google AI Studio.
+2. Start the app:
 
-  python 2_DHandPP.py
+   ```bash
+   streamlit run LLM-RAG.py
+   ```
 
-  Train the CNN: Run the training script to save a new cnn_model.pth.
-
-  python 3_TrainingCNN.py
-
-
-5. Run the Dashboard
-
-  To launch the AI-assisted diagnosis tool:
-
-  Get your Gemini API Key from Google AI Studio.
-
-  Run the Streamlit application:
-
-streamlit run LLM-RAG.py
-
-Enter your API key in the sidebar and click "Scan Random Wafer" to test the system.
-
+3. Enter the API key in the sidebar.
+4. Click **Scan Random Wafer** to run detection.

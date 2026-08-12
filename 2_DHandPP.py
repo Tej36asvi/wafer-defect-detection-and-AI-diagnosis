@@ -5,21 +5,21 @@ from scipy import ndimage
 import random
 import os
 from sklearn.model_selection import train_test_split
-import gc # Garbage Collection to free RAM
+import gc # garbage collection for ram cleanup
 
-# CONFIGURATION
+# configuration
 RAW_DATA_PATH = "./data/LSWMD.pkl"
 TRAIN_OUTPUT = "./data/train_set.pkl"
 TEST_OUTPUT = "./data/test_set.pkl"
 IMG_SIZE = 64
 
-# SCALING TARGETS
+# scaling targets
 TARGETS = {
     'TRAIN_SIZE': 8000, 
     'TEST_SIZE': 2000    
 }
 
-# HELPERS
+# helpers
 def resize_wafer_map(wafer_map):
     return cv2.resize(wafer_map, (IMG_SIZE, IMG_SIZE), interpolation=cv2.INTER_NEAREST)
 
@@ -61,7 +61,7 @@ def process_partition(df, target_count, partition_name, class_name):
         
     return final_rows
 
-# MAIN EXECUTION
+# main execution
 def main():
     print("1. Loading raw data ")
     if not os.path.exists(RAW_DATA_PATH):
@@ -74,7 +74,7 @@ def main():
     valid_failures = ['Center', 'Donut', 'Edge-Loc', 'Edge-Ring', 'Loc', 'Random', 'Scratch', 'Near-full', 'none']
     df = df[df['failureType'].isin(valid_failures)].copy()
 
-    # DROPPING EXCESS 'NONE' 
+    # drop excess none class
     print("2. Memory Optimization: Dropping excess 'none' class ")
     
 
@@ -85,23 +85,23 @@ def main():
     if len(df_none) > 12000:
         df_none = df_none.sample(n=12000, random_state=42)
     
-    # Recombining and deleting old objects to free RAM
+    # recombine and delete old objects
     df = pd.concat([df_others, df_none])
     del df_none, df_others
-    gc.collect() # Forced RAM cleanup
+    gc.collect() # force ram cleanup
     
     print(f"   Reduced Dataset Size: {len(df)} (Safe to resize)")
 
-    # 3. RESIZING IMAGES (Now running on only ~40k images instead of 800k)
+    # resize images
     print("3. Resizing images ")
     resized_maps = [resize_wafer_map(w) for w in df.waferMap]
     df['waferMap_resized'] = [x / 2.0 for x in resized_maps]
     
-    # Dropping raw heavy column
+    # drop raw wafer map column
     df = df.drop(columns=['waferMap'])
     gc.collect()
 
-    # 4. SPLITTING REAL DATA
+    # split real data
     print("-" * 60)
     print("4. Splitting Real Data (80% Train / 20% Test) ")
     train_df_real, test_df_real = train_test_split(
@@ -111,7 +111,7 @@ def main():
         random_state=42
     )
     
-    # 5. SCALING EACH PARTITION
+    # scale each partition
     print("-" * 60)
     print(f"5. Applying Scaling Targets (Train: {TARGETS['TRAIN_SIZE']}, Test: {TARGETS['TEST_SIZE']})...")
     
@@ -120,15 +120,15 @@ def main():
     unique_classes = df['failureType'].unique()
     
     for label in unique_classes:
-        # TRAINING
+        # training partition
         cls_train = train_df_real[train_df_real['failureType'] == label]
         final_train_data.extend(process_partition(cls_train, TARGETS['TRAIN_SIZE'], "TRAIN", label))
         
-        # TESTING
+        # testing partition
         cls_test = test_df_real[test_df_real['failureType'] == label]
         final_test_data.extend(process_partition(cls_test, TARGETS['TEST_SIZE'], "TEST", label))
 
-    # 6. SAVING
+    # save files
     print("-" * 60)
     print("6. Saving Files ")
     df_final_train = pd.DataFrame(final_train_data).sample(frac=1).reset_index(drop=True)
