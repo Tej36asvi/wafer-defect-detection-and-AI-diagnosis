@@ -8,38 +8,38 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
-# Importing the local knowledge base
+# import local knowledge base
 from defect_context import DEFECT_KNOWLEDGE_BASE
 
-# Setting up the page layout
+# set page layout
 st.set_page_config(page_title="FDC System", layout="wide")
 
-# Checking for GPU availability
+# check device availability
 device = "cuda" if torch.cuda.is_available() else "cpu"
 if torch.backends.mps.is_available():
     device = "mps"
 
-# MODEL ARCHITECTURE 
+# model architecture
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
         
-        # Block 1
+        # block one
         self.conv1 = nn.Conv2d(1, 32, 3, padding=1)
         self.bn1 = nn.BatchNorm2d(32)
         
-        # Block 2
+        # block two
         self.conv2 = nn.Conv2d(32, 64, 3, padding=1)
         self.bn2 = nn.BatchNorm2d(64)
         
-        # Block 3
+        # block three
         self.conv3 = nn.Conv2d(64, 128, 3, padding=1)
         self.bn3 = nn.BatchNorm2d(128)
         
         self.pool = nn.MaxPool2d(2, 2)
         self.relu = nn.ReLU()
         
-        # Classifier
+        # classifier
         self.fc1 = nn.Linear(128 * 8 * 8, 256)
         self.dropout = nn.Dropout(0.5)
         self.fc2 = nn.Linear(256, 9)
@@ -54,7 +54,7 @@ class CNN(nn.Module):
         x = self.fc2(x)
         return x
 
-# LABEL MAP
+# label map
 label_map = {
     0: 'Center',
     1: 'Donut',
@@ -67,20 +67,20 @@ label_map = {
     8: 'none'
 }
 
-# RESOURCE LOADING 
+# resource loading
 @st.cache_resource
 def load_resources():
-    # Load Model
+    # load model
     model = CNN().to(device)
     try:
-        # UPDATED FILENAME: cnn_model_aggressive.pth
+        # model file path
         model.load_state_dict(torch.load("./data/cnn_model_aggressive.pth", map_location=device))
         model.eval()
     except Exception as e:
         st.error(f"Error loading model: {e}")
         return None, None
     
-    # Load Data 
+    # load dataset
     try:
         df = pd.read_pickle("./data/test_set_aggressive.pkl")
     except:
@@ -91,7 +91,7 @@ def load_resources():
 
 model, df = load_resources()
 
-# REPORT GENERATOR USING LangChain
+# report generator
 def generate_report(api_key, defect_type, confidence):
     if not api_key:
         return "Please enter API Key."
@@ -103,7 +103,7 @@ def generate_report(api_key, defect_type, confidence):
 
     try:
         llm = ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash", # Updated model name
+            model="gemini-2.5-flash", # model name
             google_api_key=api_key,
             temperature=0.2
         )
@@ -148,11 +148,11 @@ def generate_report(api_key, defect_type, confidence):
     except Exception as e:
         return f"Error: {str(e)}"
 
-# DASHBOARD UI
+# dashboard ui
 st.title("Automated Fault Detection System")
 st.caption(" ResNet style CNN + Generative AI Support")
 
-# Sidebar
+# sidebar
 api_key = st.sidebar.text_input("Gemini API Key", type="password")
 st.sidebar.markdown("### System Knowledge Base")
 st.sidebar.json(DEFECT_KNOWLEDGE_BASE)
@@ -162,26 +162,26 @@ col1, col2 = st.columns(2)
 with col1:
     st.header("1. Detection")
     
-    # Button to pick a random wafer from the test set
+    # select random wafer from test set
     if st.button("Scan Random Wafer (Test Set)"):
         if df is not None:
-            # Pick one random sample
+            # pick one random sample
             sample = df.sample(1).iloc[0]
             st.session_state['sample'] = sample
-            st.session_state['report'] = None # Reset report
+            st.session_state['report'] = None # reset report state
             
     if 'sample' in st.session_state:
         sample = st.session_state['sample']
         img = sample['waferMap_resized']
         
-        # Displaying Image
+        # display image
         fig, ax = plt.subplots(figsize=(3,3))
-        # Ensuring we display it correctly (0=purple, 1=yellow)
+        # keep display range fixed
         ax.imshow(img, cmap='inferno', vmin=0, vmax=1)
         ax.axis('off')
         st.pyplot(fig)
         
-        # Running Inference
+        # run inference
         img_safe = np.ascontiguousarray(img)
         t = torch.tensor(img_safe, dtype=torch.float32).unsqueeze(0).unsqueeze(0).to(device)
         
@@ -196,7 +196,7 @@ with col1:
         st.session_state['pred'] = pred
         st.session_state['score'] = score
         
-        # Displaying Result
+        # display result
         if pred != 'none':
             st.error(f"Detected: {pred}")
         else:
@@ -204,8 +204,7 @@ with col1:
             
         st.metric("Confidence", f"{score:.1f}%")
         
-        # Debug info (optional, remove for production)
-        # st.caption(f"Ground Truth Label: {sample['failureType']}")
+        # debug info
 
 with col2:
     st.header("2. Resolution")
